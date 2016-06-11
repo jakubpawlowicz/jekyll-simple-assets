@@ -44,6 +44,12 @@ Well, server push is still not widely supported (as of June 2016), so here's how
 
 Because I'm lazy and it would make customizations harder.
 
+You can always download the current version with curl:
+
+```shell
+curl https://raw.githubusercontent.com/jakubpawlowicz/jekyll-simple-assets/v1.0.0/assets.rb -o _plugins/assets.rb && (echo "684dbbbfe4c6a89e99d433540bb25878f05e1028  _plugins/assets.rb" | shasum -c -)
+```
+
 ## Why doesn't it support feature X?
 
 Pull requests are welcome!
