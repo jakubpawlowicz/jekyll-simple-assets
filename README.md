@@ -30,6 +30,10 @@ Well, server push is still not widely supported (as of June 2016), so here's how
 {% asset_inline /path/to/my.css %}
 ```
 
+## How to see more detailed logs?
+
+Use `--verbose` flag which changes Jekyll log level to `debug`. In debug mode all optimizations are displayed in a build log.
+
 ## Why it's not published as a gem?
 
 Because I'm lazy and it would make customizations harder.

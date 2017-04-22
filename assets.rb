@@ -152,6 +152,8 @@ class Stylesheet
 
   def copy_images_to_target
     image_urls.each { |source_path, target_path|
+      Jekyll.logger.debug('image asset:', "'#{ source_path }' => '#{ target_path }'")
+
       FileUtils.cp(source_path, target_path)
     }
 
@@ -169,19 +171,29 @@ Liquid::Template.register_tag('asset_url', AssetUrlTag)
 Liquid::Template.register_tag('asset_inline', AssetInlineTag)
 
 Jekyll::Hooks.register(:site, :post_write) do |jekyll|
+  next unless ENV.fetch('JEKYLL_ENV', '') == 'production'
+
   $assets.each do |source, target|
     source_path = jekyll.in_dest_dir(source)
     target_path = jekyll.in_dest_dir(target)
 
     if source =~ /\.js$/
+      Jekyll.logger.debug('JS asset:', "'#{ source_path }' => '#{ target_path }'")
       %x(uglifyjs --compress --mangle --output #{target_path} #{source_path})
     elsif source =~ /\.css$/
+      Jekyll.logger.debug('CSS asset:', "'#{ source_path }' => '#{ target_path }'")
       %x(cleancss --output #{target_path} #{source_path})
+    else
+      Jekyll.logger.warn('skipping:', "unknown asset type at #{ source_path }!")
     end
   end
+
+  Jekyll.logger.info('Optimizing assets:', 'done!')
 end
 
 Jekyll::Hooks.register(:site, :post_write) do |jekyll|
+  next unless ENV.fetch('JEKYLL_ENV', '') == 'production'
+
   $assets.each do |source, target|
     next unless source =~ /\.css$/
 
@@ -190,18 +202,25 @@ Jekyll::Hooks.register(:site, :post_write) do |jekyll|
       .copy_to_target
       .copy_images_to_target
   end
+
+  Jekyll.logger.info('Processing images:', 'done!')
 end
 
 Jekyll::Hooks.register(:site, :post_write) do |jekyll|
   next unless ENV.fetch('JEKYLL_ENV', '') == 'production'
 
   Dir.glob(File.join(jekyll.dest, '**/*.html')).each do |filename|
+    Jekyll.logger.debug('HTML file:', "'#{ File.absolute_path(filename) }'")
+
     File.open(filename, 'r+') do |file|
       source = file.read.force_encoding('utf-8')
       processed = source.gsub(/<!-- inline (script|style):(\S+) -->\n/) do
         type = Regexp.last_match[1]
         asset_url = Regexp.last_match[2]
-        asset_source = File.read(File.join(jekyll.dest, asset_url))
+        asset_path = File.join(jekyll.dest, asset_url)
+        asset_source = File.read(asset_path)
+
+        Jekyll.logger.debug('', "embedding '#{ asset_path }'")
 
         "<#{ type }>#{ asset_source }</#{ type }>\n"
       end
@@ -211,4 +230,6 @@ Jekyll::Hooks.register(:site, :post_write) do |jekyll|
       file.write(processed)
     end
   end
+
+  Jekyll.logger.info('Embedding assets:', 'done!')
 end

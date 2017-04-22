@@ -2,6 +2,7 @@
 ==================
 
 * Fixed issue [#1](https://github.com/jakubpawlowicz/jekyll-simple-assets/issues/1) - move image linking to post processing.
+* Fixed issue [#2](https://github.com/jakubpawlowicz/jekyll-simple-assets/issues/2) - adds log messages.
 
 [1.0.0 / 2016-06-11]
 ==================
