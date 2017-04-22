@@ -1,4 +1,4 @@
-[2.0.0-pre / 20xx-xx-xx](https://github.com/jakubpawlowicz/jekyll-simple-assets/compare/1.0...HEAD)
+[2.0.0 / 2017-04-22](https://github.com/jakubpawlowicz/jekyll-simple-assets/compare/1.0...2.0.0)
 ==================
 
 * Fixed issue [#1](https://github.com/jakubpawlowicz/jekyll-simple-assets/issues/1) - move image linking to post processing.
