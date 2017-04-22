@@ -4,6 +4,16 @@ require 'fileutils'
 
 $assets = {}
 
+class Stamp
+  def self.file(absolute_path)
+    content = File.open(absolute_path).read
+
+    md5 = Digest::MD5.new
+    md5 << content
+    md5.hexdigest
+  end
+end
+
 class DigestedFile < Jekyll::StaticFile
   def write(dest)
     # noop
@@ -22,7 +32,7 @@ class GenericAssetTag < Liquid::Tag
       page = context.registers.fetch(:page, {})
       absolute_path = File.join(site.source, url)
 
-      digested_url = url.sub(/\.\w+$/) { |match| "-#{digest(absolute_path)}#{match}" }
+      digested_url = url.sub(/\.\w+$/) { |match| "-#{Stamp.file(absolute_path)}#{match}" }
       add_dependency(site, page, digested_url)
       mark_as_digested_asset(site, digested_url)
 
@@ -48,14 +58,6 @@ class GenericAssetTag < Liquid::Tag
 
   def production?
     ENV.fetch('JEKYLL_ENV', '') == 'production'
-  end
-
-  def digest(absolute_path)
-    content = File.open(absolute_path).read
-
-    md5 = Digest::MD5.new
-    md5 << content
-    md5.hexdigest
   end
 
   def add_dependency(site, page, digested_url)
@@ -111,6 +113,58 @@ class AssetInlineTag < GenericAssetTag
   attr_reader :type
 end
 
+class Stylesheet
+  def initialize(jekyll, target)
+    @jekyll = jekyll
+    @stylesheet_path = jekyll.in_dest_dir(target)
+
+    @rewritten = nil
+    @image_urls = []
+  end
+
+  def rewrite_urls
+    @rewritten =
+      File.read(stylesheet_path)
+        .gsub(URL_PATTERN) {
+          quote_left = $1
+          source_url = $2
+          quote_right = $3
+
+          extension = File.extname(source_url)
+          source_path = File.absolute_path(source_url, File.dirname(stylesheet_path))
+          stamp = Stamp.file(source_path)
+          digested_url = source_url.sub(extension, '-' + stamp + extension)
+          digested_path = source_path.sub(extension, '-' + stamp + extension)
+
+          image_urls << [source_path, digested_path]
+
+          "url(#{quote_left}#{digested_url}#{quote_right})"
+        }
+
+    self
+  end
+
+  def copy_to_target
+    File.open(stylesheet_path, 'w').write(rewritten)
+
+    self
+  end
+
+  def copy_images_to_target
+    image_urls.each { |source_path, target_path|
+      FileUtils.cp(source_path, target_path)
+    }
+
+    self
+  end
+
+  private
+
+  attr_reader :image_urls, :jekyll, :rewritten, :stylesheet_path
+
+  URL_PATTERN = /url\((["']?)([^)]+)(["']?)\)/m
+end
+
 Liquid::Template.register_tag('asset_url', AssetUrlTag)
 Liquid::Template.register_tag('asset_inline', AssetInlineTag)
 
@@ -123,9 +177,18 @@ Jekyll::Hooks.register(:site, :post_write) do |jekyll|
       %x(uglifyjs --compress --mangle --output #{target_path} #{source_path})
     elsif source =~ /\.css$/
       %x(cleancss --output #{target_path} #{source_path})
-    else
-      FileUtils.mv(source_path, target_path)
     end
+  end
+end
+
+Jekyll::Hooks.register(:site, :post_write) do |jekyll|
+  $assets.each do |source, target|
+    next unless source =~ /\.css$/
+
+    Stylesheet.new(jekyll, target)
+      .rewrite_urls
+      .copy_to_target
+      .copy_images_to_target
   end
 end
 

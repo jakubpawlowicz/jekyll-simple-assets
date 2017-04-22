@@ -20,17 +20,7 @@ put your edited assets.rb there so you can track changes.
 
 ## How to use it inside CSS?
 
-Prepend your CSS file with YAML comment so it's not considered static (anyone knows how to
-work around this step?), then use `asset_url` helper as normal:
-
-```css
----
----
-...
-.error {
-  background-image: url({% asset_url /img/error.png %});
-}
-```
+There is no need to change anything as all `url()` declarations will be rewritten automatically.
 
 ## How to inline assets inside HTML?
 
