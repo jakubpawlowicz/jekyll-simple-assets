@@ -145,7 +145,9 @@ class Stylesheet
   end
 
   def copy_to_target
-    File.open(stylesheet_path, 'w').write(rewritten)
+    File.open(stylesheet_path, 'w') do |f|
+      f.write(rewritten)
+    end
 
     self
   end
