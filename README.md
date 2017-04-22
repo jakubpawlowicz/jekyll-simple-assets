@@ -1,6 +1,6 @@
 # jekyll-simple-assets
 
-It's a simple Jekyll plugin for building production-ready assets. It **does not** support asset
+It's a simple [Jekyll](http://jekyllrb.com/) plugin for building production-ready assets. It **does not** support asset
 bundling as in HTTP/2 world it's considered a __bad practice__.
 
 ## How to install it?
