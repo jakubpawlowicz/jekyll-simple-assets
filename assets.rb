@@ -187,7 +187,7 @@ Jekyll::Hooks.register(:site, :post_write) do |jekyll|
       %x(cleancss --output #{target_path} #{source_path})
     else
       Jekyll.logger.warn('other asset:', "'#{ source_path }' => '#{ target_path }'")
-      FileUtils.mv(source_path, target_path)
+      FileUtils.cp(source_path, target_path)
     end
   end
 
