@@ -1,4 +1,4 @@
-[2.0.1 / 2017-xx-xx](https://github.com/jakubpawlowicz/jekyll-simple-assets/compare/2.0.0...HEAD)
+[2.0.1 / 2017-04-23](https://github.com/jakubpawlowicz/jekyll-simple-assets/compare/v2.0.0...v2.0.1)
 ==================
 
 * Fixed issue [#3](https://github.com/jakubpawlowicz/jekyll-simple-assets/issues/3) - moves other assets instead of ignoring them.

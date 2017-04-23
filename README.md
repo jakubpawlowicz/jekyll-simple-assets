@@ -41,7 +41,7 @@ Because I'm lazy and it would make customizations harder.
 You can always download the current version with curl:
 
 ```shell
-curl https://raw.githubusercontent.com/jakubpawlowicz/jekyll-simple-assets/v2.0.0/assets.rb -o _plugins/assets.rb && (echo "cd62914c7bad9fa25c653d0c51a675451d9973f1  _plugins/assets.rb" | shasum -c -)
+curl https://raw.githubusercontent.com/jakubpawlowicz/jekyll-simple-assets/v2.0.1/assets.rb -o _plugins/assets.rb && (echo "d0ac7abcdfcc5321a57d36f4c30353efd83330e5  _plugins/assets.rb" | shasum -c -)
 ```
 
 ## Why doesn't it support feature X?
