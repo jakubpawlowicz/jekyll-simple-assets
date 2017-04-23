@@ -186,7 +186,8 @@ Jekyll::Hooks.register(:site, :post_write) do |jekyll|
       Jekyll.logger.debug('CSS asset:', "'#{ source_path }' => '#{ target_path }'")
       %x(cleancss --output #{target_path} #{source_path})
     else
-      Jekyll.logger.warn('skipping:', "unknown asset type at #{ source_path }!")
+      Jekyll.logger.warn('other asset:', "'#{ source_path }' => '#{ target_path }'")
+      FileUtils.mv(source_path, target_path)
     end
   end
 
